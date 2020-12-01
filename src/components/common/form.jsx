@@ -30,7 +30,7 @@ class Form extends Component {
     if (data["password"] === data["confirmpassword"]) {
       delete errors["password"];
       delete errors["confirmpassword"];
-    } else {
+    } else if (data["confirmpassword"]) {
       errors["confirmpassword"] = "passwords doesn't match";
     }
     this.setState({data, errors: errors || {}});
@@ -63,7 +63,7 @@ class Form extends Component {
     );
   }
 
-  renderInput(name, label, type = "text") {
+  renderInput(name, label, placeholder,type = "text",autofocus) {
     let {data, errors} = this.state;
     let autocomplete = false;
     if (type === "password") {
@@ -72,12 +72,13 @@ class Form extends Component {
     return (
       <Input
         type={type}
+        placeholder={placeholder||name}
         name={name}
         onChange={this.handleChange}
         label={label}
         autoComplete={autocomplete.toString()}
         value={data[name]}
-        autoFocus={name === "name" ? true : false}
+        autoFocus={autofocus}
         error={errors[name]}
       />
     );

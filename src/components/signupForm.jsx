@@ -30,19 +30,7 @@ class RegisterForm extends Form {
     }
   };
 
-  // schema = {
-  //   username: Joi.string().required().email().label("Email"),
-  //   password: Joi.string().required().min(3).label("Password"),
-  //   name: Joi.string().required().min(3).label("Name"),
-  // };
 
-  //  passwordValidation = {
-  //   password: Joi.string().min(6).max(256).required(),
-  //   confirmpassword: Joi.any()
-  //     .equal(Joi.ref("password"))
-  //     .required()
-  //     .messages({"any.only": "passwords does not match"}),
-  // };
   schema = {
     name: Joi.string().min(2).max(50).required(),
     username: Joi.string()
@@ -52,13 +40,15 @@ class RegisterForm extends Form {
       .pattern(new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/)),
     email: Joi.string()
       .required()
-      .pattern(new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)),
+      .pattern(new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/))
+      .message("Email must be valid"),
     password: Joi.string().min(6).max(256).required(),
     confirmpassword: Joi.any()
       .equal(Joi.ref("password"))
       .required()
       .messages({"any.only": "passwords does not match"}),
   };
+
   validateUser = (data,options) => {
     let schema = Joi.object(this.schema);
     return schema.validate(data,options);
@@ -70,13 +60,14 @@ class RegisterForm extends Form {
         <h1>Register</h1>
         <div>
           <form onSubmit={this.handleSubmit}>
-            {this.renderInput("name", "Name")}
+            {this.renderInput("name", "Name",null,null,true)}
             {this.renderInput("username", "Username")}
             {this.renderInput("email", "Email")}
-            {this.renderInput("password", "Password", "password")}
+            {this.renderInput("password", "Password",null, "password")}
             {this.renderInput(
               "confirmpassword",
               "Confirm Password",
+              null,
               "password"
             )}
             {this.renderButton("Register")}
