@@ -3,13 +3,13 @@ import Joi from "joi";
 import Form from "./common/form";
 import auth from "../services/authService";
 import { Redirect } from "react-router-dom";
+import { forgotPassword } from './../services/userService';
 import {toast} from "react-toastify";
 
-class LoginForm extends Form {
+class Forgot extends Form {
   state = {
     data: {
       userId: "",
-      password: "",
     },
     errors: {},
   };
@@ -17,8 +17,7 @@ class LoginForm extends Form {
   doSubmit = async () => {
     try {
       const { data } = this.state;
-      await auth.login(data.userId, data.password); 
-
+      await forgotPassword(data.userId);
       const {state}=this.props.location
       window.location=state?state.from.pathname:"/"
     } catch (ex) {
@@ -34,8 +33,7 @@ class LoginForm extends Form {
   };
   
   schema = {
-    userId: Joi.string().required().label("Username"),
-    password: Joi.string().required().label("Password")
+    userId: Joi.string().required().label("Username or Email"),
   };
 
   validateUser = (data,options) => {
@@ -49,16 +47,14 @@ class LoginForm extends Form {
     if(auth.getCurrentUser()) return <Redirect to="/" />
     return (
       <div>
-        <h1>Login</h1>
+        <h1>Forgot Password</h1>  
         <form onSubmit={this.handleSubmit}>
-          {this.renderInput("userId", "Username or Email","username or email",null,true)}
-          {this.renderInput("password", "Password", "password","password")}
-          {this.renderButton("Login")}
-          <br/><a href="/forgot">forgot password?</a>
+          {this.renderInput("userId", "Username","username or email",null,true)}
+          {this.renderButton("Send reset link")}
         </form>
       </div>
     );
   }
 }
 
-export default LoginForm;
+export default Forgot;

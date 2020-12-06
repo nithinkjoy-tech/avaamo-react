@@ -3,6 +3,8 @@ import Joi from "joi";
 import Form from "./common/form";
 import auth from "../services/authService";
 import {register} from "../services/userService";
+import { Redirect } from 'react-router-dom';
+import {toast} from "react-toastify";
 
 class RegisterForm extends Form {
   state = {
@@ -23,12 +25,15 @@ class RegisterForm extends Form {
       window.location = "/";
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
-        const errors = {...this.state.errors};
-        errors.username = ex.response.data;
-        this.setState({errors});
+        if (ex.response.data.property) {
+          const errors = {...this.state.errors};
+          errors[ex.response.data.property] = ex.response.data.msg;
+          return this.setState({errors});
+        }
+        toast.error(ex.response.data);
       }
     }
-  };
+  }; 
 
 
   schema = {
@@ -37,7 +42,8 @@ class RegisterForm extends Form {
       .min(1)
       .max(30)
       .required()
-      .pattern(new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/)),
+      .pattern(new RegExp(/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/))
+      .message("Only letters, numbers, periods, and underscores are allowed."),
     email: Joi.string()
       .required()
       .pattern(new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/))
@@ -55,6 +61,7 @@ class RegisterForm extends Form {
   };
 
   render() {
+    if(auth.getCurrentUser()) return <Redirect to="/" />
     return (
       <React.Fragment>
         <h1>Register</h1>
