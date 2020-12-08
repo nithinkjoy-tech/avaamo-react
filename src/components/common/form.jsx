@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import Joi from "joi";
 import Input from "./input";
+import Select from "./select";
 
 class Form extends Component {
   state = {
@@ -10,7 +11,7 @@ class Form extends Component {
 
   validate = () => {
     const options = {abortEarly: false};
-    let {error} = this.validateUser(this.state.data, options);
+    let {error} = this.validateSchema(this.state.data, options);
 
     if (!error) return "";
 
@@ -44,7 +45,26 @@ class Form extends Component {
     this.doSubmit();
   };
 
+  dashboardValidation=(input)=>{
+    if(input.name==="type"){
+      let {data}=this.state
+      data.data=""
+      let errors={}
+      this.setState({data,errors})
+    }
+    
+      if(this.state.data.type==="link"){
+        this.schema.data=this.state.dataSchemaValue[0]
+      }else{
+        this.schema.data=this.state.dataSchemaValue[1]
+      }
+  }
+
   handleChange = ({currentTarget: input}) => {
+    if(this.constructor.name==="Dashboard"){
+      this.dashboardValidation(input)
+    }
+
     const errors = {...this.state.errors};
     const errorMessage = this.validateProperty(input);
     if (errorMessage) errors[input.name] = errorMessage;
@@ -63,7 +83,22 @@ class Form extends Component {
     );
   }
 
-  renderInput(name, label, placeholder,type = "text",autofocus) {
+  renderSelect(name, label, options) {
+    const {data, errors} = this.state;
+
+    return (
+      <Select
+        name={name}
+        value={data[name]}
+        label={label}
+        options={options}
+        onChange={this.handleChange}
+        error={errors[name]}
+      />
+    );
+  }
+
+  renderInput(name, label, placeholder,type = "text",autofocus,disabled=false) {
     let {data, errors} = this.state;
     let autocomplete = false;
     if (type === "password") {
@@ -76,6 +111,7 @@ class Form extends Component {
         name={name}
         onChange={this.handleChange}
         label={label}
+        disabled={disabled}
         autoComplete={autocomplete.toString()}
         value={data[name]}
         autoFocus={autofocus}

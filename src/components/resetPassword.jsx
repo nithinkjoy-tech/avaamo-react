@@ -41,7 +41,7 @@ class ResetPassword extends Form {
       .messages({"any.only": "passwords does not match"}),
   };
 
-  validateUser = (data, options) => {
+  validateSchema = (data, options) => {
     let schema = Joi.object(this.schema);
     return schema.validate(data, options);
   };

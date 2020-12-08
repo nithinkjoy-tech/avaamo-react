@@ -36,7 +36,7 @@ class Forgot extends Form {
     userId: Joi.string().required().label("Username or Email"),
   };
 
-  validateUser = (data,options) => {
+  validateSchema = (data,options) => {
     let schema = Joi.object(this.schema);
     return schema.validate(data,options);
   };

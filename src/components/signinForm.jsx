@@ -38,7 +38,7 @@ class LoginForm extends Form {
     password: Joi.string().required().label("Password")
   };
 
-  validateUser = (data,options) => {
+  validateSchema = (data,options) => {
     let schema = Joi.object(this.schema);
     return schema.validate(data,options);
   };

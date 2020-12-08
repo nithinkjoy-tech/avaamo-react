@@ -4,14 +4,17 @@ import auth from "../services/authService";
 import Joi from "joi";
 import {Redirect} from "react-router-dom";
 import {getPreviousScrapedIds} from "../services/scrapeService";
-import { toast } from 'react-toastify';
+import {toast} from "react-toastify";
 const item = ["aa", "bb", "cc", "dd"];
 
 class Dashboard extends Form {
   state = {
+    dropdownList:["link","file"],
+    dataSchemaValue:[Joi.string().required().uri().message("HTML link should be a valid link"),
+              Joi.string().required().pattern(new RegExp(/.html$/)).message("Uploaded file must be a HTML file")],
     data: {
-      htmllink: "",
-      htmlfile: "",
+      type:"",
+      data:""
     },
     errors: {},
   };
@@ -19,7 +22,7 @@ class Dashboard extends Form {
   async componentWillMount() {
     try {
       const {data} = await getPreviousScrapedIds();
-      if(data.changepassword) return window.location="/changepassword"
+      if (data.changepassword) return (window.location = "/changepassword");
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
@@ -53,19 +56,18 @@ class Dashboard extends Form {
   };
 
   schema = {
-    htmllink: Joi.string().required().uri().label("HTML link"),
-    htmlfile: Joi.string()
-      .pattern(new RegExp(/.html$/))
-      .message("only html file allowed"),
+    type: Joi.string().label("Dropdown List"),
+    data: null,
   };
 
-  validateUser = (data, options) => {
+  validateSchema = (data, options) => {
     let schema = Joi.object(this.schema);
     return schema.validate(data, options);
   };
 
   render() {
     if (!auth.getCurrentUser()) return <Redirect to="/" />;
+    let {type}=this.state.data
     return (
       <div className="row">
         <div className="col-3">
@@ -84,11 +86,9 @@ class Dashboard extends Form {
         </div>
         <div className="col">
           <h1>Dashboard</h1>
-
           <form onSubmit={this.handleSubmit}>
-            {this.renderInput("htmllink", "html link", "html link", null, true)}
-            <h3>Or</h3>
-            {this.renderInput("htmlfile", "HTML File", "file", "file")}
+            {this.renderSelect("type", "Select type", this.state.dropdownList)}
+            {this.renderInput("data", type, type, type, true,!this.state.data.type)}
             {this.renderButton("Upload")}
           </form>
         </div>

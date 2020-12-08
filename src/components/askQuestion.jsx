@@ -2,6 +2,7 @@ import React from "react";
 import Joi from "joi";
 import Form from "./common/form";
 import auth from "../services/authService";
+import {askQuestion} from "../services/scrapeService";
 import {Redirect} from "react-router-dom";
 import {toast} from "react-toastify";
 
@@ -10,16 +11,18 @@ class AskQuestion extends Form {
     data: {
       question: "",
     },
+    answer: "",
     errors: {},
   };
 
   doSubmit = async () => {
     try {
       const {data} = this.state;
-      await auth.login(data.username, data.password);
-
-      const {state} = this.props.location;
-      window.location = state ? state.from.pathname : "/";
+      const response = await askQuestion(
+        this.props.match.params.id,
+        data.question
+      );
+      this.setState({answer:response.data});
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
@@ -36,7 +39,7 @@ class AskQuestion extends Form {
     question: Joi.string().required().label("Question"),
   };
 
-  validateUser = (data, options) => {
+  validateSchema = (data, options) => {
     let schema = Joi.object(this.schema);
     return schema.validate(data, options);
   };
@@ -44,13 +47,18 @@ class AskQuestion extends Form {
   render() {
     if (!auth.getCurrentUser()) return <Redirect to="/signin" />;
     return (
-      <div>
-        <h1>Q/A</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("question", "Question", "question", null, true)}
-          {this.renderButton("Ask")}
-        </form>
-      </div>
+      <React.Fragment>
+        <div>
+          <h1>Q/A</h1>
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInput("question", "Question", "question", null, true)}
+            {this.renderButton("Ask")}
+          </form>
+        </div>
+        <div>
+          <h3>{this.state.answer}</h3>
+        </div>
+      </React.Fragment>
     );
   }
 }
