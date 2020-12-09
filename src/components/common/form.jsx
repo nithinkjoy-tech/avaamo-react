@@ -45,24 +45,28 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  dashboardValidation=(input)=>{
-    if(input.name==="type"){
-      let {data}=this.state
-      data.data=""
-      let errors={}
-      this.setState({data,errors})
+  dashboardValidation = input => {
+    if (input.name === "type") {
+      let {data} = this.state;
+      data.data = "";
+      let errors = {};
+      this.setState({data, errors});
     }
-    
-      if(this.state.data.type==="link"){
-        this.schema.data=this.state.dataSchemaValue[0]
-      }else{
-        this.schema.data=this.state.dataSchemaValue[1]
-      }
-  }
 
-  handleChange = ({currentTarget: input}) => {
-    if(this.constructor.name==="Dashboard"){
-      this.dashboardValidation(input)
+    if (this.state.data.type === "link") {
+      this.schema.data = this.state.dataSchemaValue[0];
+    } else {
+      this.schema.data = this.state.dataSchemaValue[1];
+    }
+  };
+
+  handleChange = ({target, currentTarget: input}) => {
+    if (input.type === "file") {
+      this.setState({uploadedFile: target.files[0]});
+    }
+
+    if (this.constructor.name === "Dashboard") {
+      this.dashboardValidation(input);
     }
 
     const errors = {...this.state.errors};
@@ -98,16 +102,24 @@ class Form extends Component {
     );
   }
 
-  renderInput(name, label, placeholder,type = "text",autofocus,disabled=false) {
+  renderInput(
+    name,
+    label,
+    placeholder,
+    type = "text",
+    autofocus,
+    disabled = false
+  ) {
     let {data, errors} = this.state;
     let autocomplete = false;
     if (type === "password") {
       autocomplete = true;
     }
+
     return (
       <Input
         type={type}
-        placeholder={placeholder||name}
+        placeholder={placeholder || name}
         name={name}
         onChange={this.handleChange}
         label={label}

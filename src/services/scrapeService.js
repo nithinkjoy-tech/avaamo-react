@@ -11,3 +11,7 @@ export function askQuestion(id,question){
 export function getPreviousScrapedIds(){
     return http.get(apiEndpoint)
 }
+
+export function sendFileOrLink(data){
+    return http.post(apiEndpoint,data)
+}
