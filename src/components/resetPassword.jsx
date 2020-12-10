@@ -18,7 +18,8 @@ class ResetPassword extends Form {
   doSubmit = async () => {
     try {
       const {data} = this.state;
-      await resetPassword(this.props.match.params.id, data);
+      const response=await resetPassword(this.props.match.params.id, data);
+      toast.info(response.data)
       const {state} = this.props.location;
       window.location = state ? state.from.pathname : "/";
     } catch (ex) {

@@ -12,6 +12,6 @@ export function getPreviousScrapedIds(){
     return http.get(apiEndpoint)
 }
 
-export function sendFileOrLink(data){
-    return http.post(apiEndpoint,data)
+export function sendFileOrLink(data,uploadProgress){
+    return http.post(apiEndpoint,data,uploadProgress)
 }

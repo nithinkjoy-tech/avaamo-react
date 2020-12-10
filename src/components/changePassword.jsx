@@ -18,8 +18,9 @@ class ChangePassword extends Form {
 
   doSubmit = async () => {
     try {
-      await changePassword(this.state.data);
-        toast.info("Password updated successfully")
+      const response=await changePassword(this.state.data);
+      toast.info(response.data.msg)
+      auth.loginWithJwt(response.data.token)
         window.location="/"
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {

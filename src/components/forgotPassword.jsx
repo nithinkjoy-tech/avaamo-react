@@ -17,9 +17,8 @@ class Forgot extends Form {
   doSubmit = async () => {
     try {
       const { data } = this.state;
-      await forgotPassword(data.userId);
-      const {state}=this.props.location
-      window.location=state?state.from.pathname:"/"
+      const response=await forgotPassword(data.userId);
+      toast.info(response.data);
     } catch (ex) {
       if(ex.response&&ex.response.status===400){
         if (ex.response.data.property) {
