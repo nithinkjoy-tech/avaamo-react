@@ -13,7 +13,7 @@ const item = ["aa", "bb", "cc", "dd"];
 class Dashboard extends Form {
   state = {
     isLoading: false,
-    isUploading:false,
+    isUploading: false,
     dropdownList: ["link", "file"],
     dataSchemaValue: [
       Joi.string().required().uri().message("HTML link should be a valid link"),
@@ -23,7 +23,7 @@ class Dashboard extends Form {
         .message("Uploaded file must be a HTML file"),
     ],
     uploadedFile: "",
-    loaded:0,
+    loaded: 0,
     data: {
       type: "",
       data: "",
@@ -33,8 +33,7 @@ class Dashboard extends Form {
 
   async componentDidMount() {
     try {
-      const {data} = await getPreviousScrapedIds();
-      if (data.changepassword) return (window.location = "/changepassword");
+      // const {data} = await getPreviousScrapedIds();
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
@@ -47,10 +46,10 @@ class Dashboard extends Form {
     }
   }
 
-  componentDidUpdate(){
-    if(this.state.isLoading===true) return
-    if(this.state.loaded===100){
-      this.setState({isUploading:false,isLoading:true})
+  componentDidUpdate() {
+    if (this.state.isLoading === true) return;
+    if (this.state.loaded === 100) {
+      this.setState({isUploading: false, isLoading: true});
     }
   }
 
@@ -60,7 +59,7 @@ class Dashboard extends Form {
 
   doSubmit = async () => {
     try {
-      if(this.state.isUploading===true) return
+      if (this.state.isUploading === true) return;
 
       let {type} = this.state.data;
       let data;
@@ -69,7 +68,7 @@ class Dashboard extends Form {
       } else {
         data = new FormData();
         data.append("file", this.state.uploadedFile);
-        this.setState({isUploading: true,isLoading:false});
+        this.setState({isUploading: true, isLoading: false});
       }
 
       let uploadProgress = {
@@ -107,6 +106,7 @@ class Dashboard extends Form {
   render() {
     let color = Math.random().toString(16).substring(3, 9);
     if (!auth.getCurrentUser()) return <Redirect to="/" />;
+    if (auth.getCurrentUser().changepassword) return window.location="/changepassword"
     if (this.state.isLoading)
       return (
         <center>
@@ -155,10 +155,14 @@ class Dashboard extends Form {
             {this.renderButton("Upload")}
           </form>
           <div className="form-group">
-            <br/>
-            {this.state.isUploading?<Progress max="100" color="success" value={this.state.loaded}>
-              {Math.round(this.state.loaded, 2)}%
-            </Progress>:""}
+            <br />
+            {this.state.isUploading ? (
+              <Progress max="100" color="success" value={this.state.loaded}>
+                {Math.round(this.state.loaded, 2)}%
+              </Progress>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>

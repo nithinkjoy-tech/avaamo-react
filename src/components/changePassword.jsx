@@ -16,20 +16,28 @@ class ChangePassword extends Form {
     errors: {},
   };
 
+  componentDidMount() {
+    if (auth.getCurrentUser().changepassword) {
+      toast.warn(
+        "Login successfull. Password Expired, Please update your password."
+      );
+    }
+  }
+
   doSubmit = async () => {
     try {
-      const response=await changePassword(this.state.data);
-      toast.info(response.data.msg)
-      auth.loginWithJwt(response.data.token)
-        window.location="/"
+      const response = await changePassword(this.state.data);
+      toast.info(response.data.msg);
+      auth.loginWithJwt(response.data.token);
+      window.location = "/";
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
-            const errors = {...this.state.errors};
-            errors[ex.response.data.property] = ex.response.data.msg;
-            return this.setState({errors});
-          }
-          toast.error(ex.response.data);
+          const errors = {...this.state.errors};
+          errors[ex.response.data.property] = ex.response.data.msg;
+          return this.setState({errors});
+        }
+        toast.error(ex.response.data);
       }
     }
   };
