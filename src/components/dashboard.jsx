@@ -8,13 +8,16 @@ import {toast} from "react-toastify";
 import {sendFileOrLink} from "../services/scrapeService";
 import ReactLoading from "react-loading";
 import {Progress} from "reactstrap";
-const item = ["aa", "bb", "cc", "dd"];
 
 class Dashboard extends Form {
   state = {
+    numberOfData:[],
     isLoading: false,
     isUploading: false,
-    dropdownList: ["link", "file"],
+    options : [
+      {value: "link", label: "link"},
+      {value: "file", label: "file"},
+    ],
     dataSchemaValue: [
       Joi.string().required().uri().message("HTML link should be a valid link"),
       Joi.string()
@@ -30,10 +33,16 @@ class Dashboard extends Form {
     },
     errors: {},
   };
+  
 
   async componentDidMount() {
     try {
-      // const {data} = await getPreviousScrapedIds();
+      const {data} = await getPreviousScrapedIds();
+      let numberOfData=[]
+      for(let i=1;i<=data;i++){
+        numberOfData.push(i)
+      }
+      this.setState({numberOfData})
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
@@ -79,16 +88,21 @@ class Dashboard extends Form {
         },
       };
 
-      const scrapeId = await sendFileOrLink(data, uploadProgress);
+      const {data:scrapeId} = await sendFileOrLink(data, uploadProgress);
       window.location = `/ask/${scrapeId}`;
     } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
+      if (ex.response && ex.response.status >= 400&&ex.response.status<=500) {
         if (ex.response.data.property) {
           const errors = {...this.state.errors};
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        let data={...this.state.data}
+        data["type"]=""
+        data["data"]=""
+        toast.warn(ex.response.data);
+        this.setState({isLoading:false,data,isUploading: false,uploadedFile: "",
+        loaded: 0})
       }
     }
   };
@@ -106,7 +120,7 @@ class Dashboard extends Form {
   render() {
     let color = Math.random().toString(16).substring(3, 9);
     if (!auth.getCurrentUser()) return <Redirect to="/" />;
-    if (auth.getCurrentUser().changepassword) return window.location="/changepassword"
+    if (auth.getCurrentUser().changepassword) window.location="/changepassword"
     if (this.state.isLoading)
       return (
         <center>
@@ -120,18 +134,20 @@ class Dashboard extends Form {
       );
 
     let {type} = this.state.data;
+    let {numberOfData}=this.state
+    let placeholder=type&&"Paste your link here"
     return (
       <div className="row">
         <div className="col-3">
           <ul className="list-group clickable m-2">
-            {item.map(item => (
+            {numberOfData.map(item => (
               <li
                 className="list-group-item"
                 style={{cursor: "pointer"}}
                 onClick={() => this.handleScrapeIdClick(item)}
                 key={item}
               >
-                {item}
+                {"SC-0"+item}
               </li>
             ))}
           </ul>
@@ -142,12 +158,12 @@ class Dashboard extends Form {
             {this.renderSelect(
               "type",
               "Select input type",
-              this.state.dropdownList
+              this.state.options
             )}
             {this.renderInput(
               "data",
-              type,
-              type,
+              null,
+              placeholder,
               type,
               true,
               !this.state.data.type

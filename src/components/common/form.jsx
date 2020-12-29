@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import Joi from "joi";
 import Input from "./input";
-import Select from "./select";
+import Select from "react-select";
 
 class Form extends Component {
   state = {
@@ -60,8 +60,15 @@ class Form extends Component {
     }
   };
 
-  handleChange = ({target, currentTarget: input}) => {
-    if (input.type === "file") {
+  handleChange = ({target, currentTarget: input,value}) => {
+    const data = {...this.state.data};
+
+    if(value){
+      data["type"] = value;
+      return this.setState({data})
+    }
+
+    if (input["type"] === "file") {
       this.setState({uploadedFile: target.files[0]});
     }
 
@@ -74,7 +81,6 @@ class Form extends Component {
     if (errorMessage) errors[input.name] = errorMessage;
     else delete errors[input.name];
 
-    const data = {...this.state.data};
     data[input.name] = input.value;
     this.validatePassword(data, errors);
   };
@@ -89,17 +95,26 @@ class Form extends Component {
 
   renderSelect(name, label, options) {
     const {data, errors} = this.state;
-
     return (
       <Select
-        name={name}
-        value={data[name]}
-        label={label}
-        options={options}
+        value={data["type"]}
         onChange={this.handleChange}
+        options={options}
+        placeholder={data["type"]||"Select an Option"}
         error={errors[name]}
       />
     );
+    // return (
+    //   <Select
+    //     name={name}
+    //     value={data[name]}
+    //     label={label}
+    //     options={options}
+    //     onChange={this.handleChange}
+    //     error={errors[name]}
+    //     placeholder="select an option"
+    //   />
+    // );
   }
 
   renderInput(

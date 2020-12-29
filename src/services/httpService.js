@@ -8,7 +8,7 @@ axios.interceptors.response.use(null, (error) => {
   const expectedError =
     error.response &&
     error.response.status >= 400 &&
-    error.response.status < 500;
+    error.response.status <= 500;
   if (!expectedError) {
     logger.log(error);
     toast.error("Something unexpected occured! Check your internet connection");
