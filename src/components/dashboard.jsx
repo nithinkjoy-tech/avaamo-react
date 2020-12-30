@@ -19,7 +19,7 @@ class Dashboard extends Form {
       {value: "file", label: "file"},
     ],
     dataSchemaValue: [
-      Joi.string().required().uri().message("HTML link should be a valid link"),
+      Joi.string().required().uri().message("HTML link should be a valid link. ex:https://example.com "),
       Joi.string()
         .required()
         .pattern(new RegExp(/.html$/))

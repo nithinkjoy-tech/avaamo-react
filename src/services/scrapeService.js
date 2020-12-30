@@ -12,6 +12,10 @@ export function getPreviousScrapedIds(){
     return http.get(apiEndpoint)
 }
 
+export function getScrapedIdData(id){
+    return http.get(`${apiEndpoint}/${id}`)
+}
+
 export function sendFileOrLink(data,uploadProgress){
     return http.post(apiEndpoint,data,uploadProgress)
 }

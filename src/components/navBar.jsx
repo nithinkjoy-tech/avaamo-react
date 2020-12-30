@@ -35,16 +35,6 @@ class NavBar extends Component {
             {user && (
               <React.Fragment>
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/profile">
-                    {user.username}
-                    {user.isAdmin ? (
-                      <span className="badge badge-pill badge-danger">
-                        Admin
-                      </span>
-                    ) : null}
-                  </NavLink>
-                </li>
-                <li className="nav-item">
                   <NavLink className="nav-link" to="/changepassword">
                     Change Password
                   </NavLink>
