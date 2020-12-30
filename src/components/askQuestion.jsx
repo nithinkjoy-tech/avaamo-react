@@ -6,6 +6,7 @@ import {askQuestion} from "../services/scrapeService";
 import {Redirect} from "react-router-dom";
 import {toast} from "react-toastify";
 import {getScrapedIdData} from "./../services/scrapeService";
+import {sendFileOrLink} from "../services/scrapeService";
 
 class AskQuestion extends Form {
   state = {
@@ -16,6 +17,23 @@ class AskQuestion extends Form {
     answer: "",
     errors: {},
   };
+  reScrape=async()=>{
+    try {
+      let uploadProgress=""
+      let data={link:this.state.data.scrapedDetails["URL Link"],id:this.props.match.params.id}
+      await sendFileOrLink(data, uploadProgress);
+      toast.success("Successfully re-scraped")
+    } catch (ex) {
+      if (ex.response && ex.response.status >= 400&&ex.response.status<=500) {
+        if (ex.response.data.property) {
+          const errors = {...this.state.errors};
+          errors[ex.response.data.property] = ex.response.data.msg;
+          return this.setState({errors});
+        }
+        toast.warn(ex.response.data);
+    }
+  }
+}
 
   async componentDidMount() {
     try {
@@ -84,7 +102,7 @@ class AskQuestion extends Form {
           </ul>
           {this.state.data.scrapedDetails["URL Link"] ? (
             <button
-            
+            onClick={this.reScrape}
             className="btn btn-secondary sm">Scrape Again</button>
           ) : (
             ""
