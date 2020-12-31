@@ -20,11 +20,14 @@ class AskQuestion extends Form {
   reScrape=async()=>{
     try {
       let uploadProgress=""
-      let data={link:this.state.data.scrapedDetails["URL Link"],id:this.props.match.params.id}
-      await sendFileOrLink(data, uploadProgress);
+      let dataToSend={link:this.state.data.scrapedDetails["URL Link"],id:this.props.match.params.id}
+      const {data:scrapedDetails}=await sendFileOrLink(dataToSend, uploadProgress);
+      let data = {...this.state.data};
+      data["scrapedDetails"] = scrapedDetails;
+      this.setState({data});
       toast.success("Successfully re-scraped")
     } catch (ex) {
-      if (ex.response && ex.response.status >= 400&&ex.response.status<=500) {
+      if (ex.response && ex.response.status>= 400&&ex.response.status<=500) {
         if (ex.response.data.property) {
           const errors = {...this.state.errors};
           errors[ex.response.data.property] = ex.response.data.msg;
@@ -47,7 +50,7 @@ class AskQuestion extends Form {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
           const errors = {...this.state.errors};
-          errors[ex.response.data.property] = ex.response.data.msg;
+          errors[ex.response.data .property] = ex.response.data.msg;
           return this.setState({errors});
         }
         toast.error(ex.response.data);
@@ -86,7 +89,6 @@ class AskQuestion extends Form {
 
   render() {
     if (!auth.getCurrentUser()) return <Redirect to="/signin" />;
-    console.log("ff", this.state.data.scrapedDetails);
     return (
       <React.Fragment>
         <div>
