@@ -12,7 +12,6 @@ class Form extends Component {
   validate = () => {
     const options = {abortEarly: false};
     let {error} = this.validateSchema(this.state.data, options);
-
     if (!error) return "";
 
     const errors = {};
@@ -104,17 +103,6 @@ class Form extends Component {
         error={errors[name]}
       />
     );
-    // return (
-    //   <Select
-    //     name={name}
-    //     value={data[name]}
-    //     label={label}
-    //     options={options}
-    //     onChange={this.handleChange}
-    //     error={errors[name]}
-    //     placeholder="select an option"
-    //   />
-    // );
   }
 
   renderInput(

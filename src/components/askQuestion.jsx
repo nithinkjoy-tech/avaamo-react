@@ -11,8 +11,8 @@ import { displayNotification } from './../services/notificationService';
 class AskQuestion extends Form {
   state = {
     buttonDisabled:false,
+    scrapedDetails: "",
     data: {
-      scrapedDetails: "",
       question: "",
     },
     answer: "",
@@ -24,16 +24,14 @@ class AskQuestion extends Form {
       this.setState({buttonDisabled:true})
       let uploadProgress = "";
       let dataToSend = {
-        link: this.state.data.scrapedDetails["URL Link"],
+        link: this.state.scrapedDetails["URL Link"],
         id: this.props.match.params.id,
       };
       const {data: scrapedDetails} = await sendFileOrLink(
         dataToSend,
         uploadProgress
       );
-      let data = {...this.state.data};
-      data["scrapedDetails"] = scrapedDetails;
-      this.setState({buttonDisabled:false})
+      this.setState({scrapedDetails,buttonDisabled:false})
       displayNotification("success","Successfully re-scraped")
     } catch (ex) {
       if (
@@ -46,7 +44,7 @@ class AskQuestion extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        // toast.warn(ex.response.data);
+        displayNotification("warn",ex.response.data)
       }
     }
   };
@@ -56,9 +54,7 @@ class AskQuestion extends Form {
       const {data: scrapedDetails} = await getScrapedIdData(
         this.props.match.params.id
       );
-      let data = {...this.state.data};
-      data["scrapedDetails"] = scrapedDetails;
-      this.setState({data});
+      this.setState({scrapedDetails})
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
@@ -107,7 +103,7 @@ class AskQuestion extends Form {
         <div>
           <h1>Q/A</h1>
           <ul className="list-group clickable m-2">
-            {Object.entries(this.state.data.scrapedDetails).map(
+            {Object.entries(this.state.scrapedDetails).map(
               ([key, value]) => (
                 <li className="list-group-item" key={key}>
                   <b>{key}</b> :{value}
@@ -115,7 +111,7 @@ class AskQuestion extends Form {
               )
             )}
           </ul>
-          {this.state.data.scrapedDetails["URL Link"] ? (
+          {this.state.scrapedDetails["URL Link"] ? (
             <button
               disabled={this.state.buttonDisabled}
               onClick={this.reScrape}
