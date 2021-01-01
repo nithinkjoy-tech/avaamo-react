@@ -4,7 +4,7 @@ import Form from "./common/form";
 import auth from "../services/authService";
 import {resetPassword} from "../services/userService";
 import {Redirect} from "react-router-dom";
-import {toast} from "react-toastify";
+import { displayNotification } from './../services/notificationService';
 
 class ResetPassword extends Form {
   state = {
@@ -19,7 +19,7 @@ class ResetPassword extends Form {
     try {
       const {data} = this.state;
       const response=await resetPassword(this.props.match.params.id, data);
-      toast.info(response.data)
+      displayNotification("info",response.data)
       const {state} = this.props.location;
       window.location = state ? state.from.pathname : "/";
     } catch (ex) {
@@ -29,7 +29,7 @@ class ResetPassword extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   };

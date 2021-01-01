@@ -4,10 +4,10 @@ import auth from "../services/authService";
 import Joi from "joi";
 import {Redirect} from "react-router-dom";
 import {getPreviousScrapedIds} from "../services/scrapeService";
-import {toast} from "react-toastify";
 import {sendFileOrLink} from "../services/scrapeService";
 import ReactLoading from "react-loading";
 import {Progress} from "reactstrap";
+import { displayNotification } from './../services/notificationService';
 
 class Dashboard extends Form {
   state = {
@@ -50,7 +50,7 @@ class Dashboard extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   }
@@ -100,7 +100,7 @@ class Dashboard extends Form {
         let data={...this.state.data}
         data["type"]=""
         data["data"]=""
-        toast.warn(ex.response.data);
+        displayNotification("warn",ex.response.data)
         this.setState({isLoading:false,data,isUploading: false,uploadedFile: "",
         loaded: 0})
       }

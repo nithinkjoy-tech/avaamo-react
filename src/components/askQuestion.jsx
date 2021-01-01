@@ -4,12 +4,13 @@ import Form from "./common/form";
 import auth from "../services/authService";
 import {askQuestion} from "../services/scrapeService";
 import {Redirect} from "react-router-dom";
-import {toast} from "react-toastify";
 import {getScrapedIdData} from "./../services/scrapeService";
 import {sendFileOrLink} from "../services/scrapeService";
+import { displayNotification } from './../services/notificationService';
 
 class AskQuestion extends Form {
   state = {
+    buttonDisabled:false,
     data: {
       scrapedDetails: "",
       question: "",
@@ -17,26 +18,38 @@ class AskQuestion extends Form {
     answer: "",
     errors: {},
   };
-  reScrape=async()=>{
+
+  reScrape = async () => {
     try {
-      let uploadProgress=""
-      let dataToSend={link:this.state.data.scrapedDetails["URL Link"],id:this.props.match.params.id}
-      const {data:scrapedDetails}=await sendFileOrLink(dataToSend, uploadProgress);
+      this.setState({buttonDisabled:true})
+      let uploadProgress = "";
+      let dataToSend = {
+        link: this.state.data.scrapedDetails["URL Link"],
+        id: this.props.match.params.id,
+      };
+      const {data: scrapedDetails} = await sendFileOrLink(
+        dataToSend,
+        uploadProgress
+      );
       let data = {...this.state.data};
       data["scrapedDetails"] = scrapedDetails;
-      this.setState({data});
-      toast.success("Successfully re-scraped")
+      this.setState({buttonDisabled:false})
+      displayNotification("success","Successfully re-scraped")
     } catch (ex) {
-      if (ex.response && ex.response.status>= 400&&ex.response.status<=500) {
+      if (
+        ex.response &&
+        ex.response.status >= 400 &&
+        ex.response.status <= 500
+      ) {
         if (ex.response.data.property) {
           const errors = {...this.state.errors};
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.warn(ex.response.data);
+        // toast.warn(ex.response.data);
+      }
     }
-  }
-}
+  };
 
   async componentDidMount() {
     try {
@@ -50,10 +63,10 @@ class AskQuestion extends Form {
       if (ex.response && ex.response.status === 400) {
         if (ex.response.data.property) {
           const errors = {...this.state.errors};
-          errors[ex.response.data .property] = ex.response.data.msg;
+          errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   }
@@ -73,7 +86,7 @@ class AskQuestion extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   };
@@ -104,8 +117,12 @@ class AskQuestion extends Form {
           </ul>
           {this.state.data.scrapedDetails["URL Link"] ? (
             <button
-            onClick={this.reScrape}
-            className="btn btn-secondary sm">Scrape Again</button>
+              disabled={this.state.buttonDisabled}
+              onClick={this.reScrape}
+              className="btn btn-secondary sm"
+            >
+              Scrape Again
+            </button>
           ) : (
             ""
           )}

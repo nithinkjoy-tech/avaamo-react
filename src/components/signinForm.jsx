@@ -3,7 +3,7 @@ import Joi from "joi";
 import Form from "./common/form";
 import auth from "../services/authService";
 import { Redirect } from "react-router-dom";
-import {toast} from "react-toastify";
+import { displayNotification } from './../services/notificationService';
 
 class LoginForm extends Form {
   state = {
@@ -28,7 +28,7 @@ class LoginForm extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   };

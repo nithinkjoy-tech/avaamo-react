@@ -4,7 +4,7 @@ import Form from "./common/form";
 import auth from "../services/authService";
 import {register} from "../services/userService";
 import { Redirect } from 'react-router-dom';
-import {toast} from "react-toastify";
+import { displayNotification } from './../services/notificationService';
 
 class RegisterForm extends Form {
   state = {
@@ -30,7 +30,7 @@ class RegisterForm extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   }; 

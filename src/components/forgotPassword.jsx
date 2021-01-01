@@ -4,7 +4,7 @@ import Form from "./common/form";
 import auth from "../services/authService";
 import { Redirect } from "react-router-dom";
 import { forgotPassword } from './../services/userService';
-import {toast} from "react-toastify";
+import { displayNotification } from './../services/notificationService';
 
 class Forgot extends Form {
   state = {
@@ -18,7 +18,7 @@ class Forgot extends Form {
     try {
       const { data } = this.state;
       const response=await forgotPassword(data.userId);
-      toast.info(response.data);
+      displayNotification("info",response.data)
     } catch (ex) {
       if(ex.response&&ex.response.status===400){
         if (ex.response.data.property) {
@@ -26,7 +26,7 @@ class Forgot extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   };

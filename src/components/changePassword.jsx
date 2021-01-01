@@ -2,9 +2,9 @@ import React from "react";
 import Joi from "joi";
 import Form from "./common/form";
 import auth from "../services/authService";
-import {toast} from "react-toastify";
 import {changePassword} from "../services/userService";
 import {Redirect} from "react-router-dom";
+import { displayNotification } from './../services/notificationService';
 
 class ChangePassword extends Form {
   state = {
@@ -18,16 +18,14 @@ class ChangePassword extends Form {
 
   componentDidMount() {
     if (auth.getCurrentUser().changepassword) {
-      toast.warn(
-        "Login successfull. Password Expired, Please update your password."
-      );
+      displayNotification("warn","Login successfull. Password Expired, Please update your password.")
     }
   }
 
   doSubmit = async () => {
     try {
       const response = await changePassword(this.state.data);
-      toast.info(response.data.msg);
+      displayNotification("success",response.data.message)
       auth.loginWithJwt(response.data.token);
       window.location = "/";
     } catch (ex) {
@@ -37,7 +35,7 @@ class ChangePassword extends Form {
           errors[ex.response.data.property] = ex.response.data.msg;
           return this.setState({errors});
         }
-        toast.error(ex.response.data);
+        displayNotification("error",ex.response.data)
       }
     }
   };
