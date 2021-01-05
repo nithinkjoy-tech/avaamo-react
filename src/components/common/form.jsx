@@ -115,9 +115,7 @@ class Form extends Component {
   ) {
     let {data, errors} = this.state;
     let autocomplete = false;
-    if (type === "password") {
-      autocomplete = true;
-    }
+    if (type === "password") autocomplete = true;
 
     return (
       <Input
