@@ -52,6 +52,9 @@ class Dashboard extends Form {
         }
         displayNotification("error",ex.response.data)
       }
+      if (ex.response && ex.response.status === 404) {
+        window.location="/signin"
+      }
     }
   }
 

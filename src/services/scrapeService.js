@@ -17,5 +17,6 @@ export function getScrapedIdData(id){
 }
 
 export function sendFileOrLink(data,uploadProgress){
+    console.log(data,"fg")
     return http.post(apiEndpoint,data,uploadProgress)
 }
